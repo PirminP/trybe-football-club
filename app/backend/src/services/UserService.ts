@@ -1,27 +1,23 @@
-import { compareSync } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
-import UserModel from '../models/UserModel';
-import { UserLog } from '../interfaces/UserLog';
+import * as bcrypt from 'bcryptjs';
+import tokenGenerator from '../helpers/tokenGenerator';
+import UserModel from '../model/UserModel';
+import { ILogin } from '../interfaces/User';
+import IToken from '../interfaces/Token';
 
 class UserService {
-  constructor(private Umodel: UserModel = new UserModel()) {}
+  constructor(private _model = new UserModel()) {}
 
-  async UserLogin(user: UserLog) {
-    const userValidation = await this.Umodel.findOne(user.email);
-    if (!userValidation) {
-      throw Error('Incorrect email or password');
+  async login(userLogin: ILogin): Promise<IToken> {
+    const userDate = await this._model.findOne(userLogin.email);
+    if (userDate) {
+      const match = await bcrypt.compare(userLogin.password, userDate.password);
+      if (!match) {
+        return { message: 'Incorrect email or password' };
+      }
+      const token = tokenGenerator(userDate.email, userDate.id);
+      return { token };
     }
-    const validPassword = compareSync(user.password, userValidation.password);
-    if (!validPassword) {
-      throw Error('Incorrect email or password');
-    }
-    const token = sign(
-      { data: user },
-      process.env.JWT_SECRET as string,
-
-      { algorithm: 'HS256', expiresIn: '3d' },
-    );
-    return token;
+    return { message: 'Incorrect email or password' };
   }
 }
 

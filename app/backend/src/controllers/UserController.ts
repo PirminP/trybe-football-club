@@ -1,14 +1,17 @@
 import { Request, Response } from 'express';
+import { ILogin } from '../interfaces/User';
 import UserService from '../services/UserService';
-import { UserLog } from '../interfaces/UserLog';
 
 class UserController {
-  constructor(private Uservice: UserService = new UserService()) {}
-
-  async UserLogin(req: Request, res: Response) {
-    const userLog: UserLog = req.body;
-    const login = await this.Uservice.UserLogin(userLog);
-    return res.status(200).json({ token: login });
+  constructor(private _service = new UserService()) {}
+  async login(req: Request<unknown, unknown, ILogin>, res: Response) {
+    const { email, password } = req.body;
+    const { token, message } = await this._service.login({ email, password });
+    if (message) {
+      res.status(401).json({ message });
+    } else {
+      res.status(200).json({ token });
+    }
   }
 }
 
