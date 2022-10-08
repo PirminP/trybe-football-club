@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { sign, SignOptions } from 'jsonwebtoken';
 
 function tokenGenerator(email: string, id: number) {
