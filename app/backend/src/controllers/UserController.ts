@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { ILogin } from '../interfaces/User';
+import IUser, { ILogin } from '../interfaces/User';
 import UserService from '../services/UserService';
 
 class UserController {
@@ -12,6 +12,12 @@ class UserController {
     } else {
       res.status(200).json({ token });
     }
+  }
+
+  static async validToken(req: Request, res: Response) {
+    const userToken = res.locals.user as IUser;
+
+    return res.status(200).json({ role: userToken.role });
   }
 }
 
