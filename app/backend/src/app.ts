@@ -25,7 +25,9 @@ class App {
 
     this.app.use(express.json());
     this.app.use(accessControl);
+
     this.app.use('/login', router.login);
+    this.app.use('/teams', router.team);
     this.app.use(errorHandling);
   }
 
