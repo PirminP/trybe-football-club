@@ -1,19 +1,20 @@
-// Section 2
-
 import { Request, Response } from 'express';
 import TeamService from '../services/TeamService';
 
 class TeamController {
   constructor(private teamService: TeamService) {}
 
-  async getAllTeams(req: Request, res: Response) {
-    const teamTable = await this.teamService.getAllTeams();
-    res.status(200).json(teamTable);
+  async getAll(req: Request, res: Response) {
+    const allTeams = await this.teamService.getAll();
+    res.status(200).json(allTeams);
   }
 
-  async getByIdTeam(req: Request, res: Response) {
+  async getById(req: Request, res: Response) {
     const { id } = req.params;
-    const oneTeam = await this.teamService.getByIdTeam(Number(id));
+    const oneTeam = await this.teamService.getById(Number(id));
+    if (!oneTeam) {
+      return res.status(404).json({ message: 'Team not found' });
+    }
     return res.status(200).json(oneTeam);
   }
 }
