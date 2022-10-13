@@ -1,7 +1,7 @@
 import TeamModel from '../database/models/TeamModel';
 
 class TeamService {
-  constructor(private teamModel: typeof TeamModel) {}
+  constructor(private teamModel = TeamModel) {}
 
   async getAll(): Promise<TeamModel[]> {
     const allTeams = await this.teamModel.findAll();
