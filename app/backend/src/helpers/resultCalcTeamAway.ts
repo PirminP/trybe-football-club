@@ -1,13 +1,13 @@
 import ITeamMatch, { ITeamResult } from '../interfaces/TeamMatch';
 import IMatch from '../interfaces/Match';
 
-class ResultCalcTime {
+class ResultCalcTimeAway {
   static goalsCalculation(matchPlayed: IMatch[]) {
     const goalsFavor = matchPlayed
-      .reduce((acc: number, cur: IMatch) => acc + cur.homeTeamGoals, 0);
+      .reduce((acc: number, cur: IMatch) => acc + cur.awayTeamGoals, 0);
 
     const goalsOwn = matchPlayed
-      .reduce((acc: number, cur: IMatch) => acc + cur.awayTeamGoals, 0);
+      .reduce((acc: number, cur: IMatch) => acc + cur.homeTeamGoals, 0);
 
     const goalsBalance = goalsFavor - goalsOwn;
 
@@ -21,10 +21,10 @@ class ResultCalcTime {
     let totalPoints = 0;
 
     matchPlayed.forEach((match) => {
-      if (match.homeTeamGoals > match.awayTeamGoals) {
+      if (match.awayTeamGoals > match.homeTeamGoals) {
         totalVictories += 1;
         totalPoints += 3;
-      } else if (match.homeTeamGoals < match.awayTeamGoals) {
+      } else if (match.awayTeamGoals < match.homeTeamGoals) {
         totalLosses += 1;
       } else {
         totalDraws += 1;
@@ -39,10 +39,10 @@ class ResultCalcTime {
   }
 
   static generateTable(teamInfo: ITeamMatch) {
-    const { teamName, matchHome: matchPlayed } = teamInfo;
-    const result = ResultCalcTime.matchResult(matchPlayed);
-    const goals = ResultCalcTime.goalsCalculation(matchPlayed);
-    const efficiency = ResultCalcTime.efficiency(result.totalPoints, matchPlayed.length);
+    const { teamName, matchAway: matchPlayed } = teamInfo;
+    const result = ResultCalcTimeAway.matchResult(matchPlayed);
+    const goals = ResultCalcTimeAway.goalsCalculation(matchPlayed);
+    const efficiency = ResultCalcTimeAway.efficiency(result.totalPoints, matchPlayed.length);
     const info = {
       name: teamName,
       totalGames: matchPlayed.length,
@@ -54,4 +54,4 @@ class ResultCalcTime {
   }
 }
 
-export default ResultCalcTime;
+export default ResultCalcTimeAway;

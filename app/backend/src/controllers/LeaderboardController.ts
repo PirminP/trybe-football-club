@@ -8,6 +8,11 @@ class LeaderboardController {
     const teamList = await this.leaderboardService.getAllHomeTeams();
     res.status(200).json(teamList);
   }
+
+  async getAllAwayTeams(req: Request, res: Response) {
+    const teamList = await this.leaderboardService.getAllAwayTeams();
+    res.status(200).json(teamList);
+  }
 }
 
 export default LeaderboardController;

@@ -4,6 +4,7 @@ interface ITeamMatch {
   id?: number,
   teamName: string,
   matchHome: MatchModel[],
+  matchAway: MatchModel[],
 }
 
 interface ITeamResult {
