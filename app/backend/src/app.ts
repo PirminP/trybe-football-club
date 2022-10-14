@@ -29,6 +29,7 @@ class App {
     this.app.use('/login', router.login);
     this.app.use('/teams', router.team);
     this.app.use('/matches', router.match);
+    this.app.use('/leaderboard', router.leaderboard);
     this.app.use(errorHandling);
   }
 

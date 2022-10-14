@@ -1,0 +1,12 @@
+import { Router } from 'express';
+import LeaderboardController from '../controllers/LeaderboardController';
+import LeaderboardService from '../services/LeaderboardService';
+import TeamModel from '../database/models/TeamModel';
+
+const router = Router();
+
+const leaderboardController = new LeaderboardController(new LeaderboardService(TeamModel));
+
+router.get('/home', (req, res) => leaderboardController.getAllHomeTeams(req, res));
+
+export default router;
