@@ -2,20 +2,50 @@ import * as sinon from 'sinon';
 import * as chai from 'chai';
 // @ts-ignore
 import chaiHttp = require('chai-http');
+import 'dotenv/config';
 
 import { app } from '../app';
 import { Response } from 'superagent';
-import Team from '../database/models/TeamModel';
+import UserModel from '../database/models/UserModel';
 import TeamModel from '../database/models/TeamModel';
 import MatchModel from '../database/models/MatchModel';
+import { verify, JwtPayload} from 'jsonwebtoken';
 
 chai.use(chaiHttp);
 
 const { expect } = chai;
 
+const mockUser = [
+  {
+    id: 1,
+    username: 'Admin',
+    role: 'admin',
+    email: 'admin@admin.com',
+    password: '$2a$08$xi.Hxk1czAO0nZR..B393u10aED0RQ1N3PAEXQ7HxtLjKPEZBu.PW'
+  },
+  {
+    id: 2,
+    username: 'User',
+    role: 'user',
+    email: 'user@user.com',
+    password: '$2a$08$Y8Abi8jXvsXyqm.rmp0B.uQBA5qUz7T6Ghlg/CvVr/gLxYj5UAZVO', 
+  },
+]
+
 const mockLogin = {
-  email: 'admin@admin.com',
-  password: 'secret_admin'
+  loginValid: {
+    email: 'admin@admin.com',
+    password: 'secret_admin'
+  },
+  passwordInvalid: {
+    email: 'admin@admin.com',
+    password: 'xablau'
+  },
+  emailInvalid: {
+    email: 'xablau@admin.com',
+    password: 'secret_admin'
+  },
+ 
 }
 
 const mockTeam = [
@@ -176,48 +206,43 @@ const mockInProgressMatch = [
 ]
 
 describe('Testing login route', () => {
-  describe('Login route type POST', () => {
-    it('User login with success', async () => {
-      const response = await chai.request(app).post('/login').send(mockLogin);
+  afterEach(function () {
+    sinon.restore();
+  });
 
-      expect(response.status).to.equal(200);
-      expect(response.body).to.have.key('token');
-    })
+  it('Login with valid email and status 200', async () => {
+    sinon.stub(UserModel, 'findOne').resolves(mockUser[0] as UserModel);
 
-    it('Login with email field empty', async () => {
-      const response = await chai.request(app).post('/login').send({
-        email: '',
-        password: 'secret_admin',
-      })
+    const response = await chai.request(app).post('/login').send(mockLogin.loginValid)
 
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.key('message')
-      expect(response.body.message).to.equal('All fields must be filled')
-    })
+    expect(response.status).to.be.equal(200);
+    expect(response.body).to.be.an('object').that.has.keys('token');
 
-    it('Login with password field empty', async () => {
-      const response = await chai.request(app).post('/login').send({
-        email: 'admin@admin.com',
-        password: '',
-      })
+    const secret = process.env.JWT_SECRET || 'suaSenhaSecreta';
+    const { iat, ...decoded } = verify(response.body.token, secret) as JwtPayload;
 
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.key('message');
-      expect(response.body.message).to.equal('All fields must be filled');
-    })
-
-    it('Login with email or password invalid', async () => {
-      const response = await chai.request(app).post('/login').send({
-        email: 'email@email.com',
-        password: 'password12',
-      })
-
-      expect(response.status).to.equal(401);
-      expect(response.body).to.have.key('message')
-      expect(response.body.message).to.equal('All fields must be filled')
-      expect(response.body.message).to.equal('Incorrect email or password')
-    })
+    const userLoginInfo = { email: 'admin@admin.com', id: 1 };
+    expect(decoded).to.be.equal(userLoginInfo);
   })
+  it('Login with invalid password not possible and status 401', async () => {
+    sinon.stub(UserModel, 'findOne').resolves(mockUser[0] as UserModel);
+
+    const response = await chai.request(app).post('/login').send(mockLogin.passwordInvalid)
+    expect(response.status).to.be.equal(401);
+
+    const messageInvalid = { message: 'Incorrect email or password' }
+    expect(response.body).to.be.equal(messageInvalid);
+
+  });
+  it('Login with invalid email not possible and status 401',async () => {
+    sinon.stub(UserModel, 'findOne').resolves(null);
+
+    const response = await chai.request(app).post('/login').send(mockLogin.emailInvalid)
+    expect(response.status).to.be.equal(401);
+
+    const messageInvalid = { message: 'Incorrect email or password' }
+    expect(response.body).to.be.equal(messageInvalid);
+  });
 });
 
 describe('Testing team route', () => {
