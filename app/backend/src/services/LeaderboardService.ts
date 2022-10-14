@@ -3,7 +3,8 @@ import MatchModel from '../database/models/MatchModel';
 import ResultCalcTime from '../helpers/resultCalcTeam';
 import ResultCalcTimeAway from '../helpers/resultCalcTeamAway';
 import orderedTableResult from '../helpers/orderedTableResult';
-import ITeamMatch from '../interfaces/TeamMatch';
+import ResultAllCalcTeams from '../helpers/resultAllCalcTeams';
+import ITeamMatch, { ITeamResult } from '../interfaces/TeamMatch';
 
 class LeaderboardService {
   constructor(
@@ -38,6 +39,25 @@ class LeaderboardService {
     const matchInfo = teamList.map(ResultCalcTimeAway.generateTable);
     const sortedTable = orderedTableResult(matchInfo);
     return sortedTable;
+  }
+
+  async getAllTeams() {
+    const homeTeamMatch = await this.getAllHomeTeams();
+    const awayTeamMatch = await this.getAllAwayTeams();
+
+    const completeTable: ITeamResult[] = [];
+
+    homeTeamMatch.forEach((homeTeam) => {
+      awayTeamMatch.forEach((awayTeam) => {
+        if (homeTeam.name === awayTeam.name) {
+          const generateStandings = ResultAllCalcTeams
+            .genetareCompleteTable(homeTeam, awayTeam);
+          completeTable.push(generateStandings);
+        }
+      });
+    });
+    const orderedTable = orderedTableResult(completeTable);
+    return orderedTable;
   }
 }
 
