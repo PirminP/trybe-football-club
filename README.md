@@ -22,3 +22,44 @@
     npm install // install dependencies
     cd app/backend && npm test
     ```
+
+### Demonstration
+
+`Placeholder: png file `
+
+### Endpoints
+#### Login
+
+  | Method     | Functionality | URL |
+  | ----------- | ----------- | ----------- |
+  | `POST`   | ... | http://localhost:3000/ |
+  | `GET`   | ... | http://localhost:3000 |
+
+The following JSON is to be entered in the request POST:
+  ```
+
+  ```
+
+#### Teams
+
+  | Method     | Functionality | URL |
+  | ----------- | ----------- | ----------- |
+  | `POST`   | ... | http://localhost:3000/ |
+
+The following JSON is to be entered in the request POST:
+  ```
+
+  ```
+
+#### Matches
+
+  | Method     | Functionality | URL |
+  | ----------- | ----------- | ----------- |
+  | `GET`   | ... | http://localhost:3000/ |
+
+
+#### Board
+
+  | Method     | Functionality | URL |
+  | ----------- | ----------- | ----------- |
+  | `GET`   | ... | http://localhost:3000/ |
