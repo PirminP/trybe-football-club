@@ -16,3 +16,9 @@
   npm run compose:up // start application with docker
   npm run compose:down // stop application
   ```
+
+Use the following command to run the tests:
+  ```
+  npm install // install dependencies
+  cd app/backend && npm test
+  ```
